@@ -2,10 +2,11 @@ package auth_v1
 
 import (
 	"context"
+	"log"
+
 	"github.com/Shemistan/uzum_auth/internal/models"
 	repo "github.com/Shemistan/uzum_auth/internal/storage"
 	"github.com/Shemistan/uzum_auth/internal/utils/hasher"
-	"log"
 )
 
 type IAuthSystemService interface {
@@ -70,9 +71,12 @@ func (a *authSystemService) ChangePassword(ctx context.Context, req *models.Auth
 }
 
 func (a *authSystemService) GetUser(ctx context.Context, login string) (*models.User, error) {
-	//TODO implement me
+	user, err := a.storage.GetUser(ctx, login)
+	if err != nil {
+		return nil, err
+	}
 	log.Println("Реализуй меня")
-	return &models.User{}, nil
+	return user, nil
 }
 
 func (a *authSystemService) GetUsers(ctx context.Context, logins []string) ([]*models.User, error) {

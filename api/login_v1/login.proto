@@ -11,7 +11,7 @@ service LoginV1{
   rpc Login (Login.Request) returns (Login.Response);
   rpc GetRefreshToken (GetRefreshToken.Request) returns (GetRefreshToken.Response);
   rpc GetAccessToken (GetAccessToken.Request) returns (GetAccessToken.Response);
-  rpc Check(Check.Request) returns (google.protobuf.Empty);
+  rpc Check(Check.Request) returns (Check.Response);
 }
 
 message Login {
@@ -49,6 +49,10 @@ message GetAccessToken {
 message Check {
   message Request{
     string endpoint_address = 1;
+  }
+
+  message Response {
+    int64 user_id = 1;
   }
 }
 

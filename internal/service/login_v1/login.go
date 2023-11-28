@@ -3,6 +3,7 @@ package login_v1
 import (
 	"context"
 	"errors"
+
 	"github.com/Shemistan/uzum_auth/internal/models"
 	s "github.com/Shemistan/uzum_auth/internal/storage"
 	"github.com/Shemistan/uzum_auth/internal/utils/hasher"
@@ -11,7 +12,7 @@ import (
 
 type ILoginService interface {
 	Login(ctx context.Context, req *models.AuthUser) (*models.Token, error)
-	Check(ctx context.Context) error
+	Check(ctx context.Context) (int64, error)
 }
 
 type serviceLogin struct {
@@ -43,16 +44,21 @@ func (s *serviceLogin) Login(ctx context.Context, req *models.AuthUser) (*models
 	return &res, nil
 }
 
-func (s *serviceLogin) Check(ctx context.Context) error {
+func (s *serviceLogin) Check(ctx context.Context) (int64, error) {
 	token, err := jwt.ExtractTokenFromContext(ctx)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	_, err = jwt.ValidateToken(token, s.TokenSecretKey)
+	claim, err := jwt.ValidateToken(token, s.TokenSecretKey)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	user_id, err := s.storage.GetUserIdByLogin(ctx, claim.Login)
+	if err != nil {
+		return 0, err
+	}
+
+	return user_id, nil
 }

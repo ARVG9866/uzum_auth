@@ -10,7 +10,7 @@ import (
 	s "github.com/Shemistan/uzum_auth/internal/storage"
 )
 
-const tableName = "users"
+const tableName = `"user"`
 
 type storage struct {
 	db *sqlx.DB
@@ -162,4 +162,20 @@ func (s *storage) GetPassword(ctx context.Context, login string) (string, error)
 	}
 
 	return passwordHash, nil
+}
+
+func (s *storage) GetUserIdByLogin(ctx context.Context, login string) (int64, error) {
+	var user_id int64
+	q := sq.Select("id").
+		From(tableName).
+		Where(sq.Eq{"login": login}).
+		RunWith(s.db).
+		PlaceholderFormat(sq.Dollar)
+
+	err := q.QueryRowContext(ctx).Scan(&user_id)
+
+	if err != nil {
+		return 0, err
+	}
+	return user_id, nil
 }
