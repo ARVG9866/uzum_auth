@@ -10,6 +10,7 @@ import (
 func (a *App) Run() error {
 	wg := sync.WaitGroup{}
 	wg.Add(3)
+	wg.Add(2)
 
 	go func() {
 		defer wg.Done()
@@ -28,11 +29,11 @@ func (a *App) Run() error {
 		log.Fatal(a.runHTTP())
 	}()
 
-	go func() {
-		defer wg.Done()
+	// go func() {
+	// 	defer wg.Done()
 
-		log.Fatal(a.runDocumentation())
-	}()
+	// 	log.Fatal(a.runDocumentation())
+	// }()
 
 	wg.Wait()
 	return nil
